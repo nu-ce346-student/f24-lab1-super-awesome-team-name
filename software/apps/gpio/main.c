@@ -21,6 +21,23 @@ int main(void) {
   // Control LED with raw MMIO
   // Microphone LED is P0.20 and active high
   // Add code here
+  *(uint32_t*) 0x50000504 |= (1 << 20); // dir
+  *(uint32_t*) 0x50000514 |= (1 << 20); // out
+
+  gpio_print();
+
+  uint8_t pinArray[10] = {21, 22, 15, 24, 19, 28, 11, 31, 37, 30};
+  for(int i = 0; i < sizeof(pinArray); i++){
+    gpio_config(pinArray[i], 1);
+  }
+
+  for(int i = 0; i < 5; i++){
+    gpio_set(pinArray[i]);
+  }
+
+  for(int i = 5; i < 10; i++){
+    gpio_clear(pinArray[i]);
+  }
 
   // loop forever
   printf("Looping\n");

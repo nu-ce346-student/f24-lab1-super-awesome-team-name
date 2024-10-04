@@ -26,6 +26,12 @@ void SWI1_EGU1_IRQHandler(void) {
   // Clear interrupt event
   NRF_EGU1->EVENTS_TRIGGERED[0] = 0;
 
+  for(uint32_t i = 0; i < 100; i++)
+  {
+    nrf_delay_ms(100);
+    printf("software interrupt\n");
+  }
+
   // Implement me
 }
 
@@ -33,7 +39,7 @@ void GPIOTE_IRQHandler(void) {
   // Clear interrupt event
   NRF_GPIOTE->EVENTS_IN[0] = 0;
 
-  // Implement me
+  printf("GPIO interrupt");
 }
 
 int main(void) {
@@ -44,12 +50,26 @@ int main(void) {
   //    where the register name in all caps goes after the arrow.
   //    For example, NRF_GPIOTE->CONFIG[0]
   // Add code here
+NRF_GPIOTE->CONFIG[0] |= (1 << 0) | (14 << 8) | (0 << 13) | (2 << 16);
+/*
+NRF_GPIOTE->CONFIG[0] = NRF_GPIOTE->CONFIG[0] | (1 << 11) | (1 << 10) | (1 << 9);
+NRF_GPIOTE->CONFIG[0] = NRF_GPIOTE->CONFIG[0] & (0 << 13);
+NRF_GPIOTE->CONFIG[0] = NRF_GPIOTE->CONFIG[0] | (1 << 17);
+*/
+
+NRF_GPIOTE->INTENSET |= (1 << 0);
+
+NVIC_EnableIRQ(GPIOTE_IRQn);
+NVIC_SetPriority(GPIOTE_IRQn, 1);
 
 
   // Second task. Trigger a software interrupt
   // Use the software_interupt_* functions defined above
   // Add code here
 
+software_interrupt_init();
+NVIC_SetPriority(SWI1_EGU1_IRQn, 2);
+software_interrupt_trigger();
 
   // loop forever
   while (1) {
