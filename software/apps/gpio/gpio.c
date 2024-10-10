@@ -32,9 +32,27 @@ void gpio_config(uint8_t gpio_num, gpio_direction_t dir) {
 
   if(gpio_num < 32)
   {
-    GPIO_REG_P0->PIN_CNF[gpio_num] |= (dir << 0) | (dir << 1); // is this okay? disconnect input buffer when output?
+    if(dir == 0) // input
+    {
+      GPIO_REG_P0->PIN_CNF[gpio_num] &= ~(1 << 1);
+      GPIO_REG_P0->PIN_CNF[gpio_num] &= ~(1 << 1);
+    }
+    else if(dir == 1)
+    {
+      GPIO_REG_P0->PIN_CNF[gpio_num] |= (1 << 0);
+    }
   } else
-    GPIO_REG_P1->PIN_CNF[gpio_num-32] |= (dir << 0) | (dir << 1);
+  {
+        if(dir == 0) // input
+    {
+      GPIO_REG_P1->PIN_CNF[gpio_num - 32] &= ~(1 << 1);
+      GPIO_REG_P1->PIN_CNF[gpio_num - 32] &= ~(1 << 1);
+    }
+    else if(dir == 1)
+    {
+      GPIO_REG_P1->PIN_CNF[gpio_num - 32] |= (1 << 0);
+    }
+  }
 
 }
 
@@ -60,9 +78,9 @@ void gpio_clear(uint8_t gpio_num) {
   // It can assume that the pin has already been configured
   if(gpio_num < 32)
   {
-    GPIO_REG_P0->OUT |= (0 << gpio_num);
+    GPIO_REG_P0->OUT &= ~(1 << gpio_num);
   } else
-    GPIO_REG_P1->OUT |= (0 << (gpio_num - 32));
+    GPIO_REG_P1->OUT &= ~(1 << (gpio_num - 32));
 }
 
 // Inputs: 
@@ -78,7 +96,7 @@ bool gpio_read(uint8_t gpio_num) {
   {
     return GPIO_REG_P0->IN & (1 << gpio_num);
   } else
-    return GPIO_REG_P1->IN & (1 << gpio_num);
+    return GPIO_REG_P1->IN & (1 << (gpio_num - 32));
 
   return true; // shouldn't ever reach here
 }
