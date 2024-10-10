@@ -43,7 +43,7 @@ void gpio_config(uint8_t gpio_num, gpio_direction_t dir) {
     }
   } else
   {
-        if(dir == 0) // input
+      if(dir == 0) // input
     {
       GPIO_REG_P1->PIN_CNF[gpio_num - 32] &= ~(1 << 1);
       GPIO_REG_P1->PIN_CNF[gpio_num - 32] &= ~(1 << 1);
