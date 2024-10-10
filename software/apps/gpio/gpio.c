@@ -1,5 +1,7 @@
 #include "gpio.h"
 
+#include <stdio.h>
+
 typedef struct{
   // Step 3:
   // Add register definitions here
@@ -28,7 +30,7 @@ void gpio_config(uint8_t gpio_num, gpio_direction_t dir) {
   // This function should configure the pin as an input/output
   // Hint: Use proper PIN_CNF instead of DIR
 
-  if(gpio_num < 31)
+  if(gpio_num < 32)
   {
     GPIO_REG_P0->PIN_CNF[gpio_num] |= (dir << 0) | (dir << 1); // is this okay? disconnect input buffer when output?
   } else
@@ -43,11 +45,11 @@ void gpio_set(uint8_t gpio_num) {
   // This function should make the pin high
   // It can assume that the pin has already been configured
 
-  if(gpio_num < 31)
+  if(gpio_num < 32)
   {
-    GPIO_REG_P0->OUT |= (1 << gpio_num);
+    GPIO_REG_P0->OUTSET |= (1 << gpio_num);
   } else
-    GPIO_REG_P1->OUT |= (1 << gpio_num);
+    GPIO_REG_P1->OUTSET |= (1 << (gpio_num - 32));
 }
 
 // Inputs: 
@@ -56,11 +58,11 @@ void gpio_clear(uint8_t gpio_num) {
   // Implement me
   // This function should make the pin low
   // It can assume that the pin has already been configured
-  if(gpio_num < 31)
+  if(gpio_num < 32)
   {
-    GPIO_REG_P0->OUTCLR |= (1 << gpio_num);
+    GPIO_REG_P0->OUT |= (0 << gpio_num);
   } else
-    GPIO_REG_P1->OUTCLR |= (1 << gpio_num);
+    GPIO_REG_P1->OUT |= (0 << (gpio_num - 32));
 }
 
 // Inputs: 
@@ -72,13 +74,13 @@ bool gpio_read(uint8_t gpio_num) {
   // This function should read the value from the pin
   // It can assume that the pin has already been configured
 
-  if(gpio_num < 31)
+  if(gpio_num < 32)
   {
     return GPIO_REG_P0->IN & (1 << gpio_num);
   } else
     return GPIO_REG_P1->IN & (1 << gpio_num);
 
-  //return true;
+  return true; // shouldn't ever reach here
 }
 
 // prints out some information about the GPIO driver. Can be called from main()
